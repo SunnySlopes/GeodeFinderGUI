@@ -277,7 +277,11 @@ std::vector<Hit> run_search(const SearchRequest& request, SearchControl* control
         if (a.center_z != b.center_z) {
             return a.center_z < b.center_z;
         }
-        return a.center_x < b.center_x;
+        if (a.center_x != b.center_x) {
+            return a.center_x < b.center_x;
+        }
+        // Overlapping thread strips can see a short window. The full window has the higher count.
+        return a.geode_count > b.geode_count;
     });
     clusters.erase(std::unique(clusters.begin(), clusters.end(),
                                [](const Cluster& a, const Cluster& b) {
